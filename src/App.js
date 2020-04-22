@@ -1,7 +1,9 @@
 import React from 'react';
-import {Route} from 'react-router-dom';
+import {Route, Redirect} from 'react-router-dom';
 import Home from './Home';
 import Profile from './Profile';
+import Public from './Public';
+import Private from './Private';
 import Nav from './Nav';
 import Auth from './Auth/Auth';
 import Callback from './Callback';
@@ -10,7 +12,7 @@ const App = (props) => {
   const auth = new Auth(props.history);
   return (
     <>
-      <Nav />
+      <Nav auth={auth} />
       <div className="body">
         <Route
           path="/"
@@ -21,7 +23,27 @@ const App = (props) => {
           path="/callback"
           render={(props) => <Callback auth={auth} {...props} />}
         />
-        <Route path="/profile" component={Profile} />
+        <Route
+          path="/profile"
+          render={(props) =>
+            auth.isAuthenticated() ? (
+              <Profile auth={auth} {...props} />
+            ) : (
+              <Redirect to="/" />
+            )
+          }
+        />
+        <Route path="/public" component={Public} />
+        <Route
+          path="/private"
+          render={(props) =>
+            auth.isAuthenticated() ? (
+              <Private auth={auth} {...props} />
+            ) : (
+              auth.login()
+            )
+          }
+        />
       </div>
     </>
   );

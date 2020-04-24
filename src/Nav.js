@@ -19,6 +19,11 @@ const Nav = ({auth}) => {
             <Link to="/private">Private</Link>
           </li>
         )}
+        {auth.isAuthenticated() && auth.userHasScopes(['read:courses']) && (
+          <li>
+            <Link to="/courses">Courses</Link>
+          </li>
+        )}
         <li>
           <button onClick={auth.isAuthenticated() ? auth.logout : auth.login}>
             {auth.isAuthenticated() ? 'Log Out' : 'Log In'}

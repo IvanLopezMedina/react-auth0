@@ -36,12 +36,30 @@ app.get('/private', checkJwt, function (req, res) {
   });
 });
 
-app.get('/courses', checkJwt, checkScope(['read:courses']), (req, res) => {
+app.get('/course', checkJwt, checkScope(['read:courses']), (req, res) => {
   res.json({
     courses: [
       {id: 1, title: 'Building Apps with react and redux'},
       {id: 2, title: 'Creating reusable react components'},
     ],
+  });
+});
+
+function checkRole(role) {
+  return function (req, res, next) {
+    const assignedRoles = req.user['http://localhost:3000/roles'];
+
+    if (Array.isArray(assignedRoles) && assignedRoles.includes(role)) {
+      return next();
+    } else {
+      return res.status(401).send('Insuficient role');
+    }
+  };
+}
+
+app.get('/admin', checkJwt, checkRole('admin'), function (req, res) {
+  res.json({
+    message: 'Hello from a admin API!',
   });
 });
 
